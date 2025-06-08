@@ -1,5 +1,6 @@
 import type { Moment } from 'moment';
 import { Component, MarkdownRenderer } from 'obsidian';
+import path from 'path-browserify';
 import { GlobalFilter } from '../Config/GlobalFilter';
 import { TASK_FORMATS, getSettings } from '../Config/Settings';
 import type { QueryLayoutOptions } from '../Layout/QueryLayoutOptions';
@@ -343,7 +344,7 @@ export class TaskLineRenderer {
             return task.description;
         }
 
-        // Find links in the task description
+        // Find # links in the task description
         const taskLinks = linkCache.filter((link) => {
             return (
                 link.position.start.line === task.taskLocation.lineNumber &&
@@ -362,6 +363,22 @@ export class TaskLineRenderer {
                 description = description.replace(link.original, fullLink);
             }
         }
+
+        // Resolve the relative links to the new file path
+        const relativeTaskLinks = linkCache.filter((link) => {
+            return (
+                link.position.start.line === task.taskLocation.lineNumber &&
+                task.description.includes(link.original) &&
+                link.link.startsWith('.')
+            );
+        });
+
+        for (const link of relativeTaskLinks) {
+            const fullLink = `[[${path.join(task.path, '..', link.link)}|${link.displayText}]]`;
+            // Replace the first instance of this link:
+            description = description.replace(link.original, fullLink);
+        }
+
         return description;
     }
 

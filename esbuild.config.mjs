@@ -167,6 +167,15 @@ MIT License
 
 Copyright (c) 2022 Elias Mangoro
 */
+
+/*
+License path-browserify (included library):
+
+MIT License
+
+Copyright (c) 2013 James Halliday
+*/
+
 `;
 
 const prod = process.argv[2] === 'production';
